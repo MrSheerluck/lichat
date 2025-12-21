@@ -2,7 +2,7 @@ LiChat is an open-source, AI-first chat playground for experimenting with multim
 
 Not a "ChatGPT wrapper".
 
-Website: https://lichat.dev
+Website: https://lichat.app (not live yet)
 
 License: MIT
 
