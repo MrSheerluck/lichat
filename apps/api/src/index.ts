@@ -1,13 +1,23 @@
 import { Elysia } from "elysia";
+import { cors } from "@elysiajs/cors";
 import { db } from "./db";
 import { auth } from "./lib/auth";
 import { sql } from "drizzle-orm";
 
 const app = new Elysia()
-  .get("/", () => "Hello Elysia")
+  .use(
+    cors({
+      origin: "http://localhost:3000",
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      credentials: true,
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    })
+  )
+
+  .get("/", () => "LiChat API")
+
   .get("/health", async () => {
     try {
-      // Test database connection by running a simple query
       const result = await db.execute(sql`SELECT 1 as health_check`);
 
       return {
@@ -31,9 +41,21 @@ const app = new Elysia()
       };
     }
   })
-  .mount(auth.handler)
+
+  .all("/api/auth/*", async ({ request }) => {
+    try {
+      const response = await auth.handler(request);
+      return response;
+    } catch (error) {
+      return new Response(JSON.stringify({ error: "Internal Auth Error" }), { status: 500 });
+    }
+  })
+
   .listen(8000);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+)
+
+console.log("AUTH BASE URL:", process.env.BETTER_AUTH_URL);
+;
