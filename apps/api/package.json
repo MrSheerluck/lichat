@@ -10,7 +10,9 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@ai-sdk/google": "^2.0.51",
     "@elysiajs/cors": "^1.4.0",
+    "ai": "^5.0.116",
     "better-auth": "^1.4.7",
     "drizzle-orm": "^0.45.1",
     "drizzle-typebox": "^0.3.3",

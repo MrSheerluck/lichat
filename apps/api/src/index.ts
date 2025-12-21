@@ -3,6 +3,7 @@ import { cors } from "@elysiajs/cors";
 import { db } from "./db";
 import { auth } from "./lib/auth";
 import { sql } from "drizzle-orm";
+import { chatRoute } from "./routes/chat";
 
 const app = new Elysia()
   .use(
@@ -51,6 +52,8 @@ const app = new Elysia()
     }
   })
 
+  .use(chatRoute)
+
   .listen(8000);
 
 console.log(
@@ -58,4 +61,3 @@ console.log(
 )
 
 console.log("AUTH BASE URL:", process.env.BETTER_AUTH_URL);
-;
