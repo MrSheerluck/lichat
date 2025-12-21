@@ -8,6 +8,13 @@
       "when": 1766265247263,
       "tag": "0000_classy_kitty_pryde",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766357139870,
+      "tag": "0001_perpetual_human_fly",
+      "breakpoints": true
     }
   ]
 }
