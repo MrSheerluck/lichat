@@ -1,13 +1,13 @@
-import { generateText } from "ai";
+// chat.service.ts
+import { streamText } from "ai";
 import { google } from "@ai-sdk/google";
+import type { ChatMessage } from "../types/chat.type";
 
-
-export async function generateChatResponse(message: string): Promise<string> {
-    const { text } = await generateText({
+export async function generateChatResponse(
+    messages: ChatMessage[]
+) {
+    return streamText({
         model: google("gemini-2.5-flash"),
-        prompt: message,
+        messages,
     });
-
-    console.log(text);
-    return text;
 }

@@ -3,7 +3,7 @@ import { cors } from "@elysiajs/cors";
 import { db } from "./db";
 import { auth } from "./lib/auth";
 import { sql } from "drizzle-orm";
-import { chatRoute } from "./routes/chat";
+import { chatRoute } from "./routes/chat.route";
 
 const app = new Elysia()
   .use(
