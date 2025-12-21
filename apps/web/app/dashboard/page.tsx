@@ -37,10 +37,7 @@ export default function DashboardPage() {
                     </p>
                 </div>
 
-                <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Email:</p>
-                    <p>{session.user.email}</p>
-                </div>
+
 
                 <Button
                     onClick={() => signOut()}
