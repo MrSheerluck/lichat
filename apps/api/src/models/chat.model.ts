@@ -10,7 +10,6 @@ export const chatMessageModel = t.Object({
 })
 
 export const chatRequestModel = t.Object({
-    messages: t.Array(chatMessageModel, {
-        minItems: 1
-    })
+    conversationId: t.String(),
+    message: t.String({ minLength: 1 })
 })
