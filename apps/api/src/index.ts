@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
+import { swagger } from '@elysiajs/swagger';
 import { db } from "./db";
 import { auth } from "./lib/auth";
 import { sql } from "drizzle-orm";
@@ -15,6 +16,16 @@ const app = new Elysia()
       allowedHeaders: ['Content-Type', 'Authorization'],
     })
   )
+
+  .use(swagger({
+    documentation: {
+      info: {
+        title: 'LiChat API Documentation',
+        version: '0.0.1',
+        description: 'Open source ChatGPT Alternative'
+      }
+    }
+  }))
 
   .get("/", () => "LiChat API")
 
