@@ -95,10 +95,22 @@ export const message = pgTable("message", {
 })
 
 
-export const userRelations = relations(user, ({ many }) => ({
+export const userSettings = pgTable("user_settings", {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }).unique(),
+    geminiApiKey: text("gemini_api_key"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+        .$onUpdate(() => /* @__PURE__ */ new Date())
+        .notNull(),
+})
+
+
+export const userRelations = relations(user, ({ many, one }) => ({
     sessions: many(session),
     accounts: many(account),
     conversations: many(conversation),
+    settings: one(userSettings),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -132,3 +144,9 @@ export const messageRelations = relations(message, ({ one }) => ({
 }));
 
 
+export const userSettingsRelations = relations(userSettings, ({ one }) => ({
+    user: one(user, {
+        fields: [userSettings.userId],
+        references: [user.id],
+    }),
+}));

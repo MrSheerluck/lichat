@@ -1,13 +1,19 @@
-// chat.service.ts
-import { streamText } from "ai";
-import { google } from "@ai-sdk/google";
+import { generateText } from "ai";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import type { ChatMessage } from "../types/chat.type";
 
 export async function generateChatResponse(
-    messages: ChatMessage[]
+    messages: ChatMessage[],
+    apiKey: string
 ) {
-    return streamText({
+    const google = createGoogleGenerativeAI({
+        apiKey: apiKey
+    });
+
+    const result = await generateText({
         model: google("gemini-2.5-flash"),
         messages,
     });
+
+    return result.text;
 }

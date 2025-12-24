@@ -15,6 +15,13 @@
       "when": 1766357139870,
       "tag": "0001_perpetual_human_fly",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766593775256,
+      "tag": "0002_melted_rogue",
+      "breakpoints": true
     }
   ]
 }

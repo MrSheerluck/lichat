@@ -6,6 +6,7 @@ import { auth } from "./lib/auth";
 import { sql } from "drizzle-orm";
 import { chatRoute } from "./routes/chat.route";
 import { conversationRoute } from "./routes/conversation.route";
+import { settingsRoute } from "./routes/settings.route";
 
 const app = new Elysia()
   .use(
@@ -66,6 +67,7 @@ const app = new Elysia()
 
   .use(chatRoute)
   .use(conversationRoute)
+  .use(settingsRoute)
 
   .listen(8000);
 

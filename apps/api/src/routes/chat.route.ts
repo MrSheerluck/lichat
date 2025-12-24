@@ -1,57 +1,83 @@
-import { Elysia, t } from "elysia";
+import { Elysia } from "elysia";
 import { generateChatResponse } from "../services/ai.service";
 import { chatRequestModel } from "../models/chat.model";
 import { getCurrentUser } from "../utils/auth.util";
 import { getConversationWithMessages, addMessage } from "../services/conversation.service";
+import { getApiKey } from "../services/settings.service";
 
 export const chatRoute = new Elysia().post(
     "/api/chat",
     async ({ body, request }) => {
-        const user = await getCurrentUser(request);
+        try {
+            const user = await getCurrentUser(request);
+            const userApiKey = await getApiKey(user.id);
 
-        const conversation = await getConversationWithMessages(body.conversationId, user.id);
+            if (!userApiKey) {
+                throw new Error("Please configure your Gemini API key in settings");
+            }
 
-        if (!conversation) {
-            throw new Error("Conversation not found");
-        }
+            const conversation = await getConversationWithMessages(
+                body.conversationId,
+                user.id
+            );
 
-        const newMessage = await addMessage(conversation.id, "user", body.message);
+            if (!conversation) {
+                throw new Error("Conversation not found");
+            }
 
-        const messages = [...conversation.messages, newMessage].map(
-            (message) => ({
-                role: message.role as "user" | "assistant" | "system",
-                content: message.content,
-            })
-        );
+            // Save user message
+            const newMessage = await addMessage(body.conversationId, "user", body.message);
 
-        const stream = await generateChatResponse(messages);
+            // Build messages array
+            const messages = [...conversation.messages, newMessage].map(
+                (message) => ({
+                    role: message.role as "user" | "assistant" | "system",
+                    content: message.content,
+                })
+            );
 
-        let fullText = "";
-        const textStream = stream.textStream;
+            // Get AI response (no streaming)
+            const aiResponse = await generateChatResponse(messages, userApiKey);
 
-        const responseStream = new ReadableStream({
-            async start(controller) {
-                const reader = textStream.getReader();
-                try {
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
+            // Save assistant message
+            await addMessage(body.conversationId, "assistant", aiResponse);
 
-                        fullText += value;
-                        controller.enqueue(value);
-                    }
-
-                    await addMessage(conversation.id, "assistant", fullText);
-                    controller.close();
-                } catch (error) {
-                    controller.error(error);
+            // Return the response
+            return {
+                message: aiResponse
+            };
+        } catch (error: any) {
+            const errorMessage = getAIErrorMessage(error);
+            return new Response(
+                JSON.stringify({ error: errorMessage }),
+                {
+                    status: error.statusCode || 500,
+                    headers: { "Content-Type": "application/json" }
                 }
-            },
-        });
-
-        return responseStream;
+            );
+        }
     },
     {
         body: chatRequestModel,
     }
 );
+
+function getAIErrorMessage(error: any): string {
+    if (error?.["vercel.ai.error"]) {
+        const message = error.message || error.responseBody;
+
+        if (message?.includes("quota") || message?.includes("RESOURCE_EXHAUSTED")) {
+            return "You've exceeded your Gemini API quota. Please check your API usage at https://ai.dev/usage or wait for your quota to reset.";
+        }
+
+        if (message?.includes("API key") || message?.includes("UNAUTHENTICATED")) {
+            return "Invalid Gemini API key. Please check your API key in settings.";
+        }
+
+        if (message?.includes("rate limit") || error.statusCode === 429) {
+            return "Rate limit exceeded. Please wait a moment before trying again.";
+        }
+    }
+
+    return error.message || "An error occurred while generating the response. Please try again.";
+}
