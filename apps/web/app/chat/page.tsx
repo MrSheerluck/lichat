@@ -4,6 +4,7 @@ import { ChatInput } from "@/components/chat/chat-input"
 import { useCreateConversation } from "@/hooks/use-conversation"
 import { useSendMessage } from "@/hooks/use-chat"
 import { useRouter } from "next/navigation"
+import { SidebarTrigger } from "@workspace/ui/components/sidebar"
 
 export default function ChatPage() {
     const router = useRouter()

@@ -5,6 +5,7 @@ import { ChatInput } from "@/components/chat/chat-input"
 import { MessageBubble } from "@/components/chat/message-bubble"
 import { useSendMessage } from "@/hooks/use-chat"
 import { useConversation } from "@/hooks/use-conversation"
+import { SidebarTrigger } from "@workspace/ui/components/sidebar"
 import { useRef, useEffect } from "react"
 
 export default function ChatConversationPage({
@@ -43,7 +44,8 @@ export default function ChatConversationPage({
 
     return (
         <div className="flex flex-col h-screen bg-background relative">
-            <div className="shrink-0 h-14 border-b flex items-center px-4 bg-background/95 backdrop-blur z-20">
+            <div className="shrink-0 h-14 border-b flex items-center px-4 bg-background/95 backdrop-blur z-20 gap-2">
+                <SidebarTrigger />
                 <span className="font-semibold text-sm truncate">
                     {conversation?.title || "Conversation"}
                 </span>
