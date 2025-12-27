@@ -24,14 +24,12 @@ export default function SignInPage() {
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div className="w-full max-w-md space-y-6 p-8">
-                {/* Header Section */}
                 <div className="text-center space-y-2">
                     <h1 className="text-3xl font-bold">Welcome to LiChat</h1>
                     <p className="text-muted-foreground">
                         Sign in to start chatting
                     </p>
                 </div>
-                {/* Buttons Section */}
                 <div className="space-y-3">
                     <Button
                         onClick={handleGoogleSignIn}

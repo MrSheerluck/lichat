@@ -41,14 +41,14 @@ export function MessageBubble({ role, content }: MessageBubbleProps) {
                     )}
 
                     <div className={cn(
-                        "rounded-2xl px-5 py-2.5 shadow-sm text-sm leading-relaxed max-w-full",
+                        "rounded-2xl px-6 py-4 shadow-sm text-sm leading-relaxed max-w-full",
                         isUser
                             ? "bg-primary text-primary-foreground rounded-tr-md"
                             : "bg-muted/50 text-foreground rounded-tl-md border border-border/50",
                         "overflow-hidden"
                     )}>
                         <div className={cn(
-                            "prose prose-sm dark:prose-invert max-w-none break-words",
+                            "prose prose-sm dark:prose-invert max-w-none break-words prose-p:leading-7",
                             isUser && "prose-headings:text-primary-foreground prose-p:text-primary-foreground prose-strong:text-primary-foreground prose-code:text-primary-foreground prose-ul:text-primary-foreground prose-ol:text-primary-foreground prose-a:text-primary-foreground/90"
                         )}>
                             <ReactMarkdown
