@@ -10,14 +10,14 @@ export default function SignInPage() {
     const handleGoogleSignIn = async () => {
         await signIn.social({
             provider: "google",
-            callbackURL: "http://localhost:3000/dashboard",
+            callbackURL: "http://localhost:3000/chat",
         })
     }
 
     const handleGithubSignIn = async () => {
         await signIn.social({
             provider: "github",
-            callbackURL: "http://localhost:3000/dashboard",
+            callbackURL: "http://localhost:3000/chat",
         })
     }
 

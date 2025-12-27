@@ -7,6 +7,7 @@ import { useSendMessage } from "@/hooks/use-chat"
 import { useConversation } from "@/hooks/use-conversation"
 import { SidebarTrigger } from "@workspace/ui/components/sidebar"
 import { useRef, useEffect } from "react"
+import { useSession } from "@/lib/auth-client"
 
 export default function ChatConversationPage({
     params
@@ -17,6 +18,7 @@ export default function ChatConversationPage({
     const { data: conversation, isLoading } = useConversation(conversationId)
     const sendMessage = useSendMessage()
     const scrollRef = useRef<HTMLDivElement>(null)
+    const { data: session } = useSession()
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -75,8 +77,8 @@ export default function ChatConversationPage({
             <div className="shrink-0 z-20 bg-background">
                 <ChatInput
                     onSend={handleSend}
-                    disabled={sendMessage.isPending}
-                    placeholder="Message LiChat..."
+                    disabled={sendMessage.isPending || !session?.user}
+                    placeholder={session?.user ? "Message LiChat..." : "Sign in to chat..."}
                 />
             </div>
         </div>

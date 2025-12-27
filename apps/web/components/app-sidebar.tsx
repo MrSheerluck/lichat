@@ -24,6 +24,7 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 import { Button } from "@workspace/ui/components/button"
 import Link from "next/link"
+import { NavUser } from "@/components/nav-user"
 
 export function AppSidebar() {
     const params = useParams()
@@ -98,7 +99,7 @@ export function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
-                {/* User profile or settings could go here */}
+                <NavUser />
             </SidebarFooter>
         </Sidebar>
     )

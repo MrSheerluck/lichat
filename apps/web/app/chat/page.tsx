@@ -3,13 +3,16 @@
 import { ChatInput } from "@/components/chat/chat-input"
 import { useCreateConversation } from "@/hooks/use-conversation"
 import { useSendMessage } from "@/hooks/use-chat"
+
 import { useRouter } from "next/navigation"
 import { SidebarTrigger } from "@workspace/ui/components/sidebar"
+import { useSession } from "@/lib/auth-client"
 
 export default function ChatPage() {
     const router = useRouter()
     const createConversation = useCreateConversation()
     const sendMessage = useSendMessage()
+    const { data: session } = useSession()
 
     const handleSend = async (message: string) => {
         const newConversation = await createConversation.mutateAsync({
@@ -48,8 +51,8 @@ export default function ChatPage() {
                 <div className="w-full max-w-5xl">
                     <ChatInput
                         onSend={handleSend}
-                        disabled={createConversation.isPending || sendMessage.isPending}
-                        placeholder="Message LiChat..."
+                        disabled={createConversation.isPending || sendMessage.isPending || !session?.user}
+                        placeholder={session?.user ? "Message LiChat..." : "Sign in to chat..."}
                     />
                 </div>
             </main>
