@@ -1,8 +1,12 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
+import { swagger } from '@elysiajs/swagger';
 import { db } from "./db";
 import { auth } from "./lib/auth";
 import { sql } from "drizzle-orm";
+import { chatRoute } from "./routes/chat.route";
+import { conversationRoute } from "./routes/conversation.route";
+import { settingsRoute } from "./routes/settings.route";
 
 const app = new Elysia()
   .use(
@@ -13,6 +17,16 @@ const app = new Elysia()
       allowedHeaders: ['Content-Type', 'Authorization'],
     })
   )
+
+  .use(swagger({
+    documentation: {
+      info: {
+        title: 'LiChat API Documentation',
+        version: '0.0.1',
+        description: 'Open source ChatGPT Alternative'
+      }
+    }
+  }))
 
   .get("/", () => "LiChat API")
 
@@ -51,6 +65,10 @@ const app = new Elysia()
     }
   })
 
+  .use(chatRoute)
+  .use(conversationRoute)
+  .use(settingsRoute)
+
   .listen(8000);
 
 console.log(
@@ -58,4 +76,3 @@ console.log(
 )
 
 console.log("AUTH BASE URL:", process.env.BETTER_AUTH_URL);
-;

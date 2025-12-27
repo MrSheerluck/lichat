@@ -73,9 +73,44 @@ export const verification = pgTable(
     (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const userRelations = relations(user, ({ many }) => ({
+export const conversation = pgTable("conversation", {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+        .$onUpdate(() => /* @__PURE__ */ new Date())
+        .notNull(),
+})
+
+export const message = pgTable("message", {
+    id: text("id").primaryKey(),
+    conversationId: text("conversation_id").notNull().references(() => conversation.id, { onDelete: "cascade" }),
+    role: text("role").notNull(),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+        .$onUpdate(() => /* @__PURE__ */ new Date())
+        .notNull(),
+})
+
+
+export const userSettings = pgTable("user_settings", {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }).unique(),
+    geminiApiKey: text("gemini_api_key"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+        .$onUpdate(() => /* @__PURE__ */ new Date())
+        .notNull(),
+})
+
+
+export const userRelations = relations(user, ({ many, one }) => ({
     sessions: many(session),
     accounts: many(account),
+    conversations: many(conversation),
+    settings: one(userSettings),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -88,6 +123,30 @@ export const sessionRelations = relations(session, ({ one }) => ({
 export const accountRelations = relations(account, ({ one }) => ({
     user: one(user, {
         fields: [account.userId],
+        references: [user.id],
+    }),
+}));
+
+export const conversationRelations = relations(conversation, ({ one, many }) => ({
+    user: one(user, {
+        fields: [conversation.userId],
+        references: [user.id],
+    }),
+    messages: many(message),
+}));
+
+
+export const messageRelations = relations(message, ({ one }) => ({
+    conversation: one(conversation, {
+        fields: [message.conversationId],
+        references: [conversation.id],
+    }),
+}));
+
+
+export const userSettingsRelations = relations(userSettings, ({ one }) => ({
+    user: one(user, {
+        fields: [userSettings.userId],
         references: [user.id],
     }),
 }));
