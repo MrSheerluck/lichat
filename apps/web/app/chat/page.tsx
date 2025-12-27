@@ -1,31 +1,49 @@
 "use client"
 
 import { ChatInput } from "@/components/chat/chat-input"
-import { useCreateConversation } from "@/hooks/use-conversation"
+import { useCreateConversation, useDeleteConversation } from "@/hooks/use-conversation"
 import { useSendMessage } from "@/hooks/use-chat"
+import { useApiKeyStatus } from "@/hooks/use-settings"
 
 import { useRouter } from "next/navigation"
 import { SidebarTrigger } from "@workspace/ui/components/sidebar"
 import { useSession } from "@/lib/auth-client"
+import { toast } from "sonner"
 
 export default function ChatPage() {
     const router = useRouter()
     const createConversation = useCreateConversation()
+    const deleteConversation = useDeleteConversation()
     const sendMessage = useSendMessage()
     const { data: session } = useSession()
 
     const handleSend = async (message: string) => {
-        const newConversation = await createConversation.mutateAsync({
-            title: message.slice(0, 30) || "New Chat"
-        })
+        let newConversationId: string | null = null;
+        try {
+            const newConversation = await createConversation.mutateAsync({
+                title: message.slice(0, 30) || "New Chat"
+            })
+            newConversationId = newConversation.id
 
-        await sendMessage.mutateAsync({
-            conversationId: newConversation.id,
-            message: message
-        })
+            await sendMessage.mutateAsync({
+                conversationId: newConversation.id,
+                message: message
+            })
 
-        router.push(`/chat/${newConversation.id}`)
+            router.push(`/chat/${newConversation.id}`)
+        } catch (error: any) {
+            // Error is handled by mutation onError
+            console.error("Failed to start conversation:", error)
+            toast.error(error.message || "Failed to start conversation. Please check your settings.")
+
+            // Cleanup: Delete the empty conversation if it was created
+            if (newConversationId) {
+                deleteConversation.mutate(newConversationId)
+            }
+        }
     }
+
+    const { data: apiKeyStatus } = useApiKeyStatus()
 
     return (
         <div className="flex flex-col h-screen bg-background">
@@ -51,8 +69,12 @@ export default function ChatPage() {
                 <div className="w-full max-w-5xl">
                     <ChatInput
                         onSend={handleSend}
-                        disabled={createConversation.isPending || sendMessage.isPending || !session?.user}
-                        placeholder={session?.user ? "Message LiChat..." : "Sign in to chat..."}
+                        disabled={createConversation.isPending || sendMessage.isPending || !session?.user || !apiKeyStatus?.hasApiKey}
+                        placeholder={
+                            !session?.user ? "Sign in to chat..." :
+                                !apiKeyStatus?.hasApiKey ? "Please configure API key in Settings" :
+                                    "Message LiChat..."
+                        }
                     />
                 </div>
             </main>

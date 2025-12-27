@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from "sonner"
 import { chatApi } from '@/lib/api'
 import type { ChatRequest } from '@/lib/types'
 
@@ -38,6 +39,7 @@ export function useSendMessage() {
             return { previousConversation }
         },
         onError: (err, newMessage, context) => {
+            toast.error(err.message || "Failed to send message")
 
             queryClient.setQueryData(
                 ['conversations', newMessage.conversationId],

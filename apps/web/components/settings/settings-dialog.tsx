@@ -1,12 +1,23 @@
 "use client"
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@workspace/ui/components/dialog"
 import { useApiKeyStatus, useSaveApiKey, useDeleteApiKey } from "@/hooks/use-settings"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@workspace/ui/components/card"
 import { toast } from "sonner"
 import { ApiKeyForm } from "@/components/settings/api-key-form"
 import { ApiKeyStatus } from "@/components/settings/api-key-status"
 
-export default function SettingsPage() {
+interface SettingsDialogProps {
+    open: boolean
+    onOpenChange: (open: boolean) => void
+}
+
+export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
     const { data: status, isLoading } = useApiKeyStatus()
     const saveApiKey = useSaveApiKey()
     const deleteApiKey = useDeleteApiKey()
@@ -37,15 +48,15 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="container max-w-2xl py-10">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Settings</CardTitle>
-                    <CardDescription>
-                        Configure your Gemini API key to start chatting with AI
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Settings</DialogTitle>
+                    <DialogDescription>
+                        Configure your Gemini API key to start chatting with AI.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
                     {isLoading ? (
                         <div className="flex items-center justify-center py-8">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -61,8 +72,8 @@ export default function SettingsPage() {
                             isSaving={saveApiKey.isPending}
                         />
                     )}
-                </CardContent>
-            </Card>
-        </div>
+                </div>
+            </DialogContent>
+        </Dialog>
     )
 }

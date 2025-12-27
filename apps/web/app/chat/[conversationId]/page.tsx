@@ -5,6 +5,7 @@ import { ChatInput } from "@/components/chat/chat-input"
 import { MessageBubble } from "@/components/chat/message-bubble"
 import { useSendMessage } from "@/hooks/use-chat"
 import { useConversation } from "@/hooks/use-conversation"
+import { useApiKeyStatus } from "@/hooks/use-settings"
 import { SidebarTrigger } from "@workspace/ui/components/sidebar"
 import { useRef, useEffect } from "react"
 import { useSession } from "@/lib/auth-client"
@@ -19,6 +20,7 @@ export default function ChatConversationPage({
     const sendMessage = useSendMessage()
     const scrollRef = useRef<HTMLDivElement>(null)
     const { data: session } = useSession()
+    const { data: apiKeyStatus } = useApiKeyStatus()
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -43,6 +45,8 @@ export default function ChatConversationPage({
             </div>
         )
     }
+
+
 
     return (
         <div className="flex flex-col h-screen bg-background relative">
@@ -77,8 +81,12 @@ export default function ChatConversationPage({
             <div className="shrink-0 z-20 bg-background">
                 <ChatInput
                     onSend={handleSend}
-                    disabled={sendMessage.isPending || !session?.user}
-                    placeholder={session?.user ? "Message LiChat..." : "Sign in to chat..."}
+                    disabled={sendMessage.isPending || !session?.user || !apiKeyStatus?.hasApiKey}
+                    placeholder={
+                        !session?.user ? "Sign in to chat..." :
+                            !apiKeyStatus?.hasApiKey ? "Please configure API key in Settings" :
+                                "Message LiChat..."
+                    }
                 />
             </div>
         </div>

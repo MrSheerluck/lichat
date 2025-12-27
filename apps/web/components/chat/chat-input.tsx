@@ -60,7 +60,7 @@ export function ChatInput({ onSend, disabled, placeholder }: ChatInputProps) {
                         placeholder={placeholder || "Message..."}
                         disabled={disabled}
                         rows={1}
-                        className="min-h-[24px] max-h-[200px] w-full resize-none border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-4 py-3 !bg-transparent overflow-hidden text-base placeholder:text-muted-foreground/50"
+                        className="min-h-[24px] max-h-[200px] w-full resize-none border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-4 py-3 !bg-transparent overflow-hidden text-base placeholder:text-foreground/70"
                         style={{ overflowY: input.length > 200 ? 'auto' : 'hidden' }}
                     />
                     <Button

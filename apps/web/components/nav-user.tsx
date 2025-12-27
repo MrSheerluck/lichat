@@ -38,13 +38,27 @@ import {
 import { useSession, signOut } from "@/lib/auth-client"
 import { useTheme } from "next-themes"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { SettingsDialog } from "@/components/settings/settings-dialog"
+import { useQueryClient } from "@tanstack/react-query"
 
 export function NavUser() {
     const { isMobile } = useSidebar()
-    const { data: session } = useSession()
+    const { data: session, isPending } = useSession()
     const { setTheme } = useTheme()
     const router = useRouter()
+    const [showSettings, setShowSettings] = useState(false)
+    const queryClient = useQueryClient()
 
+    if (isPending) {
+        return (
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <div className="h-12 w-full animate-pulse rounded-md bg-sidebar-accent/10" />
+                </SidebarMenuItem>
+            </SidebarMenu>
+        )
+    }
 
     if (!session?.user) {
         return (
@@ -61,7 +75,12 @@ export function NavUser() {
 
     const user = session.user
 
+
+
     const handleSignOut = async () => {
+        await queryClient.removeQueries({
+            queryKey: ['conversations']
+        })
         await signOut({
             fetchOptions: {
                 onSuccess: () => {
@@ -111,7 +130,7 @@ export function NavUser() {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem onClick={() => router.push('/settings')}>
+                            <DropdownMenuItem onSelect={() => setShowSettings(true)}>
                                 <Settings className="mr-2 h-4 w-4" />
                                 Settings
                             </DropdownMenuItem>
@@ -150,6 +169,7 @@ export function NavUser() {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+                <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
             </SidebarMenuItem>
         </SidebarMenu>
     )
